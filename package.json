@@ -28,7 +28,7 @@
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "bin": {
-    "prompty-tools-mcp": "./dist/index.js"
+    "prompty-tools-mcp": "./dist/cli.js"
   },
   "exports": {
     ".": {

@@ -28,6 +28,12 @@ export default defineConfig([
     },
   },
   {
+    files: ["src/cli.ts"],
+    rules: {
+      "no-console": "off",
+    },
+  },
+  {
     files: ["**/*.test.ts", "src/test-utils/**", "tests/**"],
     rules: {
       "@typescript-eslint/no-explicit-any": "off",
