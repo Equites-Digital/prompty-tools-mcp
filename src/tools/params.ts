@@ -46,12 +46,12 @@ export const listParamsShape = {
 };
 
 export interface ListArgs {
-  page?: number;
-  pageSize?: ApiPageSize;
-  sort?: Sort;
-  scope?: Scope;
-  search?: string;
-  tag?: string;
+  page?: number | undefined;
+  pageSize?: ApiPageSize | undefined;
+  sort?: Sort | undefined;
+  scope?: Scope | undefined;
+  search?: string | undefined;
+  tag?: string | undefined;
 }
 
 export function toListParams(args: ListArgs): ListParams {
@@ -73,8 +73,8 @@ export const versionListParamsShape = {
 };
 
 export interface VersionListArgs {
-  page?: number;
-  pageSize?: VersionPageSize;
+  page?: number | undefined;
+  pageSize?: VersionPageSize | undefined;
 }
 
 export function toVersionListParams(args: VersionListArgs): VersionListParams {
@@ -83,6 +83,8 @@ export function toVersionListParams(args: VersionListArgs): VersionListParams {
   if (args.pageSize !== undefined) params.pageSize = args.pageSize;
   return params;
 }
+
+export const idSchema = z.string().min(1);
 
 export const tagsField = z
   .array(z.string())

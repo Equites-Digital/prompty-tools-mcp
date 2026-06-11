@@ -1,18 +1,52 @@
 import type { Page, PromptyClient } from "@prompty-tools/core";
 import { vi, type Mock } from "vitest";
 
-type ResourceStub = Record<string, Mock>;
-
-export interface ClientStub {
-  prompts: ResourceStub;
-  personas: ResourceStub;
-  tones: ResourceStub & { collections: ResourceStub };
-  outputs: ResourceStub;
-  constraints: ResourceStub & { collections: ResourceStub };
-  libraries: ResourceStub;
+export interface EntityStub {
+  list: Mock;
+  listAll: Mock;
+  get: Mock;
+  create: Mock;
+  update: Mock;
+  delete: Mock;
+  vote: Mock;
+  unvote: Mock;
+  toggleFavorite: Mock;
+  setVisibility: Mock;
+  listVersions: Mock;
+  getVersion: Mock;
 }
 
-function entityStub(): ResourceStub {
+export interface CollectionsStub {
+  list: Mock;
+  listAll: Mock;
+  get: Mock;
+  create: Mock;
+  update: Mock;
+  delete: Mock;
+  vote: Mock;
+  unvote: Mock;
+  toggleFavorite: Mock;
+  listItems: Mock;
+  setItems: Mock;
+}
+
+export interface LibrariesStub extends EntityStub {
+  listPrompts: Mock;
+  listAllPrompts: Mock;
+  addPrompt: Mock;
+  removePrompt: Mock;
+}
+
+export interface ClientStub {
+  prompts: EntityStub;
+  personas: EntityStub;
+  tones: EntityStub & { collections: CollectionsStub };
+  outputs: EntityStub;
+  constraints: EntityStub & { collections: CollectionsStub };
+  libraries: LibrariesStub;
+}
+
+function entityStub(): EntityStub {
   return {
     list: vi.fn(),
     listAll: vi.fn(),
@@ -29,7 +63,7 @@ function entityStub(): ResourceStub {
   };
 }
 
-function collectionsStub(): ResourceStub {
+function collectionsStub(): CollectionsStub {
   return {
     list: vi.fn(),
     listAll: vi.fn(),
