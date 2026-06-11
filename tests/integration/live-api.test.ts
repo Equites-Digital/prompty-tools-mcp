@@ -116,10 +116,15 @@ describe.skipIf(apiKey === undefined || apiKey === "")("live API round-trip", ()
     created.libraryId = library.id;
 
     await call("add_prompt_to_library", { id: library.id, promptId: prompt.id });
-    const members = (await call("list_library_prompts", { id: library.id })) as {
+    const members = (await call("list_library_prompts", { id: library.id, scope: "all" })) as {
       items: { id: string }[];
     };
     expect(members.items.map((member) => member.id)).toContain(prompt.id);
+
+    const publicOnly = (await call("list_library_prompts", { id: library.id })) as {
+      items: { id: string }[];
+    };
+    expect(publicOnly.items.map((member) => member.id)).not.toContain(prompt.id);
 
     await call("remove_prompt_from_library", { id: library.id, promptId: prompt.id });
 

@@ -29,7 +29,7 @@ export const libraryTools: readonly RegisteredTool[] = [
   defineTool({
     name: "list_library_prompts",
     description:
-      "List the prompts inside a library, including each prompt's compiled text. Supports the same paging and search parameters as search_prompts.",
+      "List the prompts inside a library, including each prompt's compiled text. The default scope (public) hides the user's own private member prompts - pass scope \"all\" to see every prompt accessible to the user.",
     annotations: READ_ONLY,
     inputSchema: { id: idSchema.describe("Library id."), ...listParamsShape },
     handler: async (client, args) =>
