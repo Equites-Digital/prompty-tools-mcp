@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Getting started - @prompty-tools/mcp</title>
+    <meta
+      name="description"
+      content="Install the prompty.tools MCP server in Claude Desktop, Claude Code, or Cursor."
+    />
+    <link rel="stylesheet" href="./assets/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css"
+    />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a href="./index.html" class="logo"><img src="./assets/logo.png" alt="Prompty logo" class="logo-img" width="28" height="28" /><span>@prompty-tools/mcp</span></a>
+        <nav class="site-nav">
+          <a href="./index.html">Home</a>
+          <a href="./getting-started.html" class="active">Getting started</a>
+          <a href="./concepts.html">Concepts</a>
+          <a href="./tools/prompts.html">Prompts</a>
+          <a href="./tools/personas.html">Personas</a>
+          <a href="./tools/tones.html">Tones</a>
+          <a href="./tools/outputs.html">Outputs</a>
+          <a href="./tools/constraints.html">Constraints</a>
+          <a href="./tools/libraries.html">Libraries</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <h1>Getting started</h1>
+
+      <h2 id="requirements">Requirements</h2>
+      <ul>
+        <li>Node.js 20 or newer (the server runs via <code>npx</code>).</li>
+        <li>A prompty.tools account.</li>
+        <li>An MCP-aware client: Claude Desktop, Claude Code, Cursor, or similar.</li>
+      </ul>
+
+      <h2 id="api-key">1. Create an API key</h2>
+      <p>
+        API keys can only be created in the prompty.tools dashboard - there is
+        no API for minting keys. Go to
+        <a href="https://www.prompty.tools/dashboard/api-keys"
+          >prompty.tools/dashboard/api-keys</a
+        >, create a key, and copy it. Keys start with <code>pk_</code> and are
+        shown once.
+      </p>
+
+      <h2 id="install">2. Register the server in your client</h2>
+
+      <h3>Claude Code</h3>
+      <pre><code class="language-bash">claude mcp add prompty -e PROMPTY_API_KEY=pk_... -- npx -y @prompty-tools/mcp</code></pre>
+
+      <h3>Claude Desktop</h3>
+      <p>
+        Add the server to <code>claude_desktop_config.json</code>
+        (Settings → Developer → Edit Config):
+      </p>
+      <pre><code class="language-json">{
+  "mcpServers": {
+    "prompty": {
+      "command": "npx",
+      "args": ["-y", "@prompty-tools/mcp"],
+      "env": { "PROMPTY_API_KEY": "pk_..." }
+    }
+  }
+}</code></pre>
+
+      <h3>Cursor</h3>
+      <p>Add the same entry to <code>.cursor/mcp.json</code> (project) or <code>~/.cursor/mcp.json</code> (global):</p>
+      <pre><code class="language-json">{
+  "mcpServers": {
+    "prompty": {
+      "command": "npx",
+      "args": ["-y", "@prompty-tools/mcp"],
+      "env": { "PROMPTY_API_KEY": "pk_..." }
+    }
+  }
+}</code></pre>
+
+      <h2 id="verify">3. Verify it works</h2>
+      <p>
+        Restart your client and ask the assistant:
+        <em>"Search prompty for public prompts about code review."</em>
+        You should see a <code>search_prompts</code> tool call with
+        <code>{"scope": "public", "search": "code review"}</code> and a JSON
+        result with <code>items</code> and <code>total</code>.
+      </p>
+
+      <h2 id="configuration">Configuration reference</h2>
+      <table>
+        <thead>
+          <tr><th>Environment variable</th><th>Required</th><th>Default</th><th>Purpose</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>PROMPTY_API_KEY</code></td>
+            <td>yes</td>
+            <td>-</td>
+            <td>Bearer key (<code>pk_...</code>) from the dashboard.</td>
+          </tr>
+          <tr>
+            <td><code>PROMPTY_BASE_URL</code></td>
+            <td>no</td>
+            <td><code>https://www.prompty.tools/api/v1</code></td>
+            <td>Override for self-hosted or local development setups.</td>
+          </tr>
+          <tr>
+            <td><code>PROMPTY_TIMEOUT_MS</code></td>
+            <td>no</td>
+            <td><code>30000</code></td>
+            <td>Per-request HTTP timeout in milliseconds.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout">
+        <strong>Free-tier quota</strong>
+        Every tool call is one API request, and the free tier allows 20
+        requests per day. The server's instructions steer assistants toward
+        targeted searches, but for regular agentic use you will want a pro
+        (1,000/day) or teams (10,000/day) subscription.
+      </div>
+
+      <h2 id="next">Next</h2>
+      <ul>
+        <li><a href="./concepts.html">Concepts</a> - how prompts, building blocks, and compilation fit together.</li>
+        <li><a href="./tools/prompts.html">Tool reference</a> - every tool with its exact input schema.</li>
+      </ul>
+    </main>
+
+    <footer class="site-footer">
+      <p>
+        <a href="https://github.com/Equites-Digital/prompty-tools-mcp">GitHub</a>
+        ·
+        <a href="https://www.npmjs.com/package/@prompty-tools/mcp">npm</a> ·
+        <a href="https://prompty.tools">prompty.tools</a>
+      </p>
+      <p>MIT © prompty.tools</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>

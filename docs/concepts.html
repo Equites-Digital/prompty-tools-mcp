@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Concepts - @prompty-tools/mcp</title>
+    <meta
+      name="description"
+      content="How the prompty.tools MCP server models prompts, building blocks, scopes, pagination, rate limits, and errors."
+    />
+    <link rel="stylesheet" href="./assets/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css"
+    />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a href="./index.html" class="logo"><img src="./assets/logo.png" alt="Prompty logo" class="logo-img" width="28" height="28" /><span>@prompty-tools/mcp</span></a>
+        <nav class="site-nav">
+          <a href="./index.html">Home</a>
+          <a href="./getting-started.html">Getting started</a>
+          <a href="./concepts.html" class="active">Concepts</a>
+          <a href="./tools/prompts.html">Prompts</a>
+          <a href="./tools/personas.html">Personas</a>
+          <a href="./tools/tones.html">Tones</a>
+          <a href="./tools/outputs.html">Outputs</a>
+          <a href="./tools/constraints.html">Constraints</a>
+          <a href="./tools/libraries.html">Libraries</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <h1>Concepts</h1>
+
+      <h2 id="building-blocks">Building blocks and server-side compilation</h2>
+      <p>
+        On prompty.tools a prompt is assembled from a <strong>task</strong>
+        plus reusable building blocks: a <strong>persona</strong> (who the
+        prompt speaks as), <strong>tones</strong> (style), an
+        <strong>output</strong> (format), and <strong>constraints</strong>
+        (rules). When you create or update a prompt you pass the task text and
+        the <em>IDs</em> of the building blocks - the platform resolves them
+        and compiles the final prompt text server-side. The compiled text is
+        returned as <code>compiledPrompt</code> by
+        <code>get_prompt</code>.
+      </p>
+      <p>The canonical creation flow:</p>
+      <pre><code class="language-text">search_tones / create_persona / ...   -> collect building-block IDs
+create_prompt(task, IDs, isPublic)    -> platform compiles, returns the new id
+get_prompt(id)                        -> read the compiled prompt text</code></pre>
+      <div class="callout">
+        <strong>Persona references use the version id.</strong>
+        Personas are versioned, and prompts pin a specific persona version.
+        Pass <code>personaVersionId</code>, taking the value from
+        <code>latestVersionId</code> (<code>get_persona</code>),
+        <code>versionId</code> (<code>search_personas</code> items), or
+        <code>versionId</code> (<code>create_persona</code> response).
+      </div>
+
+      <h2 id="scopes">Scopes</h2>
+      <p>Every search tool accepts a <code>scope</code>:</p>
+      <table>
+        <thead><tr><th>Scope</th><th>Returns</th></tr></thead>
+        <tbody>
+          <tr><td><code>public</code> (default)</td><td>Community items visible to everyone.</td></tr>
+          <tr><td><code>mine</code></td><td>Only the API key owner's items, public and private.</td></tr>
+          <tr><td><code>favorites</code></td><td>Items the key owner has favorited.</td></tr>
+          <tr><td><code>all</code></td><td>Everything accessible: public plus the owner's private items.</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="pagination">Pagination</h2>
+      <p>
+        List results return <code>items</code>, <code>total</code>,
+        <code>page</code>, <code>pageSize</code>, <code>hasNext</code>, and
+        <code>hasPrev</code>. The platform only accepts these page sizes:
+        <code>6, 12, 24, 48, 100</code> for lists (default 12) and
+        <code>10, 20, 50</code> for version lists (default 20). Request the
+        next page by repeating the call with <code>page + 1</code>.
+      </p>
+
+      <h2 id="search">Search and tags</h2>
+      <p>
+        <code>search</code> matches title and description (max 200
+        characters). <code>tag</code> filters by one exact tag. Both can be
+        combined.
+      </p>
+
+      <h2 id="rate-limits">Rate limits and quotas</h2>
+      <p>
+        Every tool call is one API request. Daily quotas per subscription
+        tier: <strong>free 20</strong>, <strong>pro 1,000</strong>,
+        <strong>teams 10,000</strong>. Requests are additionally limited to 30
+        per minute per action. On HTTP 429 the server reports the limit and a
+        <code>Retry-After</code> when available; it never retries
+        automatically.
+      </p>
+
+      <h2 id="errors">Errors</h2>
+      <p>
+        Failed calls return an MCP tool error whose text carries the platform
+        error name, HTTP status, message, and - for 5xx responses - a
+        <code>requestId</code> to quote when reporting issues:
+      </p>
+      <pre><code class="language-text">PromptyNotFoundError (HTTP 404): Prompt not found
+PromptyAuthError (HTTP 401): Unauthorized
+PromptyRateLimitError (HTTP 429): Rate limit exceeded. Retry-After: 42s. ...</code></pre>
+      <p>
+        A 404 also covers building-block references that exist but are not
+        accessible to your key.
+      </p>
+
+      <h2 id="visibility">Visibility</h2>
+      <p>
+        Every create tool requires an explicit <code>isPublic</code> choice -
+        there are no silent defaults, so an assistant never accidentally
+        publishes private material (the platform's own defaults differ per
+        resource, which is why the server insists). Prompts and personas have
+        dedicated <code>set_*_visibility</code> tools; tones, outputs,
+        constraints, and libraries change visibility via their update tools.
+      </p>
+
+      <h2 id="versioning">Versioning</h2>
+      <table>
+        <thead><tr><th>Resource</th><th>Versioned</th><th>Changelog</th></tr></thead>
+        <tbody>
+          <tr><td>Prompts</td><td>Yes - every update creates a version</td><td>Required on update</td></tr>
+          <tr><td>Personas</td><td>Yes - every update creates a version</td><td>Optional on update</td></tr>
+          <tr><td>Tones, outputs, constraints</td><td>No - updates overwrite</td><td>-</td></tr>
+          <tr><td>Libraries</td><td>No - metadata updates overwrite</td><td>-</td></tr>
+        </tbody>
+      </table>
+      <p>
+        Updates take the <em>full new state</em>, not a diff: omitting a
+        building-block reference on <code>update_prompt</code> removes it from
+        the new version.
+      </p>
+
+      <h2 id="safety">What the server deliberately cannot do</h2>
+      <ul>
+        <li>
+          <strong>Delete anything.</strong> Deletion stays in the
+          <a href="https://www.prompty.tools/dashboard">dashboard</a>. The
+          closest tool, <code>remove_prompt_from_library</code>, only removes
+          a membership and is reversible.
+        </li>
+        <li>
+          <strong>Mint API keys.</strong> Keys are created in the dashboard
+          and passed in via <code>PROMPTY_API_KEY</code>.
+        </li>
+      </ul>
+    </main>
+
+    <footer class="site-footer">
+      <p>
+        <a href="https://github.com/Equites-Digital/prompty-tools-mcp">GitHub</a>
+        ·
+        <a href="https://www.npmjs.com/package/@prompty-tools/mcp">npm</a> ·
+        <a href="https://prompty.tools">prompty.tools</a>
+      </p>
+      <p>MIT © prompty.tools</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>

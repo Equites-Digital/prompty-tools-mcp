@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@prompty-tools/mcp - MCP server for prompty.tools</title>
+    <meta
+      name="description"
+      content="Documentation for the official prompty.tools MCP server: search, fetch, create, and version prompts from any MCP-aware AI client."
+    />
+    <link rel="stylesheet" href="./assets/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css"
+    />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <a href="./index.html" class="logo"><img src="./assets/logo.png" alt="Prompty logo" class="logo-img" width="28" height="28" /><span>@prompty-tools/mcp</span></a>
+        <nav class="site-nav">
+          <a href="./index.html" class="active">Home</a>
+          <a href="./getting-started.html">Getting started</a>
+          <a href="./concepts.html">Concepts</a>
+          <a href="./tools/prompts.html">Prompts</a>
+          <a href="./tools/personas.html">Personas</a>
+          <a href="./tools/tones.html">Tones</a>
+          <a href="./tools/outputs.html">Outputs</a>
+          <a href="./tools/constraints.html">Constraints</a>
+          <a href="./tools/libraries.html">Libraries</a>
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <h1>@prompty-tools/mcp</h1>
+        <p>
+          The official
+          <a href="https://modelcontextprotocol.io">Model Context Protocol</a>
+          server for <a href="https://www.prompty.tools">prompty.tools</a>.
+          Search, fetch, create, and version your prompts without leaving your
+          AI client - Claude Desktop, Claude Code, Cursor, or any other
+          MCP-aware host.
+        </p>
+      </section>
+
+      <h2 id="quickstart">Quick start</h2>
+      <p>
+        Create an API key at
+        <a href="https://www.prompty.tools/dashboard/api-keys"
+          >prompty.tools/dashboard/api-keys</a
+        >, then register the server with your client:
+      </p>
+
+      <pre><code class="language-bash"># Claude Code
+claude mcp add prompty -e PROMPTY_API_KEY=pk_... -- npx -y @prompty-tools/mcp</code></pre>
+
+      <pre><code class="language-json">{
+  "mcpServers": {
+    "prompty": {
+      "command": "npx",
+      "args": ["-y", "@prompty-tools/mcp"],
+      "env": { "PROMPTY_API_KEY": "pk_..." }
+    }
+  }
+}</code></pre>
+
+      <p>
+        Then ask your assistant things like <em>"find my code-review prompt on
+        prompty and use it"</em> or <em>"save this as a private prompt with a
+        direct tone"</em>.
+      </p>
+
+      <h2 id="features">What's in the box</h2>
+      <div class="feature-grid">
+        <div>
+          <h3>33 tools, six resources</h3>
+          <p>
+            Prompts, personas, tones, outputs, constraints, and libraries -
+            search, read, create, update, versions, and library membership.
+          </p>
+        </div>
+        <div>
+          <h3>Server-side compilation</h3>
+          <p>
+            Prompts are created from a task plus building-block IDs; the
+            platform compiles the final text. No client-side template drift.
+          </p>
+        </div>
+        <div>
+          <h3>Safe by design</h3>
+          <p>
+            No delete tools - removal stays in the dashboard. Every create
+            requires an explicit public/private choice, so an assistant never
+            publishes by accident.
+          </p>
+        </div>
+        <div>
+          <h3>Typed error surfacing</h3>
+          <p>
+            Platform errors arrive with HTTP status, message, and request id.
+            Rate-limit responses include your tier's quota so the assistant
+            can explain instead of blindly retrying.
+          </p>
+        </div>
+        <div>
+          <h3>Quota-aware</h3>
+          <p>
+            Tool descriptions and server instructions steer assistants toward
+            targeted searches - relevant on the free tier's 20 requests/day.
+          </p>
+        </div>
+        <div>
+          <h3>Docs that cannot drift</h3>
+          <p>
+            Every tool reference page on this site is generated from the same
+            schemas the server registers at runtime.
+          </p>
+        </div>
+      </div>
+
+      <h2 id="next">Where to next</h2>
+      <ul>
+        <li>
+          <a href="./getting-started.html">Getting started</a> - create a key,
+          install in your client, verify it works.
+        </li>
+        <li>
+          <a href="./concepts.html">Concepts</a> - the building-block model,
+          scopes, pagination, rate limits, errors, and versioning.
+        </li>
+        <li>
+          Tool reference for
+          <a href="./tools/prompts.html">prompts</a>,
+          <a href="./tools/personas.html">personas</a>,
+          <a href="./tools/tones.html">tones</a>,
+          <a href="./tools/outputs.html">outputs</a>,
+          <a href="./tools/constraints.html">constraints</a>, and
+          <a href="./tools/libraries.html">libraries</a>.
+        </li>
+      </ul>
+
+      <div class="callout">
+        <strong>Looking for a TypeScript SDK instead?</strong>
+        This server is a thin adapter over
+        <a href="https://npm.prompty.tools">@prompty-tools/core</a>, the typed
+        client for the same API. Use core directly when you are writing code
+        rather than talking to an assistant.
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <p>
+        <a href="https://github.com/Equites-Digital/prompty-tools-mcp">GitHub</a>
+        ·
+        <a href="https://www.npmjs.com/package/@prompty-tools/mcp">npm</a> ·
+        <a href="https://prompty.tools">prompty.tools</a>
+      </p>
+      <p>MIT © prompty.tools</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
+    <script>
+      hljs.highlightAll();
+    </script>
+  </body>
+</html>
